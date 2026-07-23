@@ -1,19 +1,12 @@
-# Katrielle Control v2
+# Katrielle Control v3
 
-Incluye:
-- Plan por fecha
-- Agenda
-- Pedidos
-- Clientes
-- Finanzas
-- Cotizador automático
-- Cálculos guardados
-- Respaldo de seguridad
+## Sube a GitHub
+Reemplaza index.html, manifest.webmanifest y sw.js.
 
-## Publicación
-Reemplaza en GitHub los archivos:
-- index.html
-- manifest.webmanifest
-- sw.js
+## Activa Firebase
+1. Authentication > Comenzar > Google > Activar.
+2. Authentication > Configuración > Dominios autorizados > agrega katriellecreations.github.io
+3. Firestore Database > Crear base de datos > modo producción.
+4. Firestore > Reglas > pega el contenido de firestore.rules > Publicar.
 
-GitHub Pages actualizará el mismo enlace automáticamente.
+Al entrar por primera vez con Google, los datos locales actuales se subirán automáticamente.

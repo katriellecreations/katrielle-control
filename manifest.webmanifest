@@ -1,9 +1,9 @@
 {
-  "name": "Katrielle Control",
-  "short_name": "Katrielle",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f8f5fc",
-  "theme_color": "#7448b0",
-  "icons": []
+  "name":"Katrielle Control",
+  "short_name":"Katrielle",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f8f5fc",
+  "theme_color":"#7448b0",
+  "icons":[]
 }

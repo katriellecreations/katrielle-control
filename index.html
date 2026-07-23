@@ -14,7 +14,12 @@
 </style>
 </head>
 <body>
-<header><h1>Katrielle Control</h1><small>Centro de gestión de Katrielle Creations</small></header>
+<header><div style="display:flex;align-items:center;gap:10px">
+<div><h1>Katrielle Control</h1><small>Centro de gestión de Katrielle Creations</small></div>
+<div style="margin-left:auto;text-align:right">
+<button id="cloudAuthBtn" class="btn" style="background:#fff;color:#7448b0;padding:8px 10px">Entrar</button>
+<div id="cloudStatus" style="font-size:11px;margin-top:3px;opacity:.9">Guardado local</div>
+</div></div></header>
 <nav id="nav"><button data-view="dashboard" class="active"><span>🏠</span>Inicio</button><button data-view="orders"><span>📦</span>Pedidos</button><button data-view="agenda"><span>📅</span>Agenda</button><button data-view="quotes"><span>🧮</span>Cotizador</button><button data-view="more"><span>⚙️</span>Más</button></nav>
 <main>
 <section id="dashboard" class="view active"><h2>Resumen</h2><div class="grid cards"><div class="card stat"><span class="muted">Pedidos activos</span><b id="sActive">0</b></div><div class="card stat"><span class="muted">Por cobrar</span><b id="sBalance">$0</b></div><div class="card stat"><span class="muted">Próxima entrega</span><b id="sNext">—</b></div><div class="card stat"><span class="muted">Clientes</span><b id="sClients">0</b></div></div><div class="plan-grid"><div class="card"><div class="row"><h3>Plan por fecha</h3><div class="right" style="min-width:190px"><label>Ver fecha</label><input id="planDate" type="date" onchange="renderPlan()"></div></div><div id="planList"></div><button class="primary" onclick="openTaskForPlan()">+ Agregar tarea</button></div><div class="card"><h3>Prioridad recomendada</h3><div id="priorityBox" class="notice">Organiza primero las entregas más cercanas.</div><h3 style="margin-top:16px">Próximas entregas</h3><div id="nextOrders"></div><h3 style="margin-top:16px">Progreso LLQP</h3><label>Horas estudiadas</label><input id="llqpHours" type="number" min="0" step="0.5"><label style="margin-top:9px">Meta semanal</label><input id="llqpGoal" type="number" min="1" step="0.5" value="8"><progress id="llqpProgress" max="100" value="0"></progress><div id="llqpText" class="muted"></div></div></div></section>
@@ -30,7 +35,21 @@
 const KEY='katrielle-control-v1';
 const seed={orders:[{id:crypto.randomUUID(),client:'Cliente etiquetas',phone:'',product:'Etiquetas escolares',date:'2026-07-25',time:'',price:0,deposit:0,delivery:'Recoge',deliveryCost:0,address:'',status:'Producción',design:'',notes:''},{id:crypto.randomUUID(),client:'Cliente UP',phone:'',product:'Desayuno UP + libro personalizado de 60 páginas',date:'2026-07-29',time:'',price:100,deposit:50,delivery:'Domicilio',deliveryCost:0,address:'',status:'Diseño',design:'Tema UP',notes:''}],tasks:[{id:crypto.randomUUID(),title:'Imprimir, laminar y cortar etiquetas escolares',date:'2026-07-22',time:'07:30',end:'12:00',category:'Katrielle',done:false,notes:''},{id:crypto.randomUUID(),title:'Exámenes médicos',date:'2026-07-22',time:'13:00',end:'15:00',category:'Personal',done:false,notes:''},{id:crypto.randomUUID(),title:'Continuar y organizar etiquetas escolares',date:'2026-07-22',time:'15:30',end:'18:00',category:'Katrielle',done:false,notes:''},{id:crypto.randomUUID(),title:'Estudiar LLQP Ética',date:'2026-07-22',time:'20:00',end:'22:00',category:'LLQP',done:false,notes:''}],clients:[],llqp:{hours:0,goal:8},quotes:[]};
 let db=JSON.parse(localStorage.getItem(KEY)||'null')||seed;db.orders=db.orders||[];db.tasks=db.tasks||[];db.clients=db.clients||[];db.llqp=db.llqp||{hours:0,goal:8};db.quotes=db.quotes||[];
-const $=id=>document.getElementById(id);function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}function money(n){return new Intl.NumberFormat('es-CA',{style:'currency',currency:'CAD'}).format(Number(n||0))}function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function dateLabel(d){if(!d)return'—';const [y,m,day]=d.split('-');return `${day}/${m}/${y}`}
+const $=id=>document.getElementById(id);
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(db));
+ renderAll();
+ if(window.katrielleCloud?.save) window.katrielleCloud.save(db);
+}
+window.getKatrielleData=()=>JSON.parse(JSON.stringify(db));
+window.setKatrielleData=(incoming)=>{
+ if(!incoming||typeof incoming!=='object')return;
+ db=incoming;
+ db.orders=db.orders||[];db.tasks=db.tasks||[];db.clients=db.clients||[];
+ db.llqp=db.llqp||{hours:0,goal:8};db.quotes=db.quotes||[];
+ localStorage.setItem(KEY,JSON.stringify(db));renderAll();
+};
+function money(n){return new Intl.NumberFormat('es-CA',{style:'currency',currency:'CAD'}).format(Number(n||0))}function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function dateLabel(d){if(!d)return'—';const [y,m,day]=d.split('-');return `${day}/${m}/${y}`}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active');renderAll()});
 function renderAll(){renderDashboard();renderPlan();renderOrders();renderAgenda();renderClients();renderFinance();renderSavedQuotes();calculateQuote()}
 function renderDashboard(){const active=db.orders.filter(o=>o.status!=='Entregado');$('sActive').textContent=active.length;$('sBalance').textContent=money(db.orders.reduce((s,o)=>s+Math.max(0,(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0)),0));const next=[...active].filter(o=>o.date).sort((a,b)=>a.date.localeCompare(b.date));$('sNext').textContent=next[0]?dateLabel(next[0].date).slice(0,5):'—';$('sClients').textContent=db.clients.length;$('moreClients').textContent=db.clients.length;$('nextOrders').innerHTML=next.length?next.slice(0,5).map(o=>`<div class="muted" style="margin:6px 0"><b>${dateLabel(o.date).slice(0,5)}</b> · <strong>${esc(o.product)}</strong> · ${esc(o.client)}</div>`).join(''):'<div class="empty">No hay entregas próximas.</div>';$('priorityBox').textContent=next.length>2?'No aceptes pedidos nuevos hasta terminar primero lo urgente.':next.length?'Empieza por la entrega más cercana: '+next[0].product+'.':'No hay entregas pendientes.';$('llqpHours').value=db.llqp.hours;$('llqpGoal').value=db.llqp.goal;const pct=Math.min(100,(db.llqp.hours/db.llqp.goal)*100||0);$('llqpProgress').value=pct;$('llqpText').textContent=`${db.llqp.hours} de ${db.llqp.goal} horas`}
@@ -53,5 +72,90 @@ function renderFinance(){fSales.textContent=money(db.orders.reduce((s,o)=>s+(+o.
 function exportBackup(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='katrielle-respaldo-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.orders||!x.tasks||!x.clients)throw 0;if(confirm('Esto reemplazará los datos actuales. ¿Continuar?')){db=x;db.quotes=db.quotes||[];save();alert('Respaldo restaurado correctamente.')}}catch{alert('El archivo no es un respaldo válido.')}};r.readAsText(f)}
 $('planDate').value='2026-07-22';if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});renderAll();
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyDSWuG36kn1C2cz94P_mDIJnLCM1vNKPGA",
+ authDomain:"katrielle-control.firebaseapp.com",
+ projectId:"katrielle-control",
+ storageBucket:"katrielle-control.firebasestorage.app",
+ messagingSenderId:"240260921162",
+ appId:"1:240260921162:web:9b99e9543d9644114df3b3"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const dbCloud=getFirestore(app);
+const provider=new GoogleAuthProvider();
+provider.setCustomParameters({prompt:"select_account"});
+const statusEl=document.getElementById("cloudStatus");
+const authBtn=document.getElementById("cloudAuthBtn");
+let user=null, saving=false, pending=null;
+
+function status(text,error=false){
+ statusEl.textContent=text;
+ statusEl.style.color=error?"#ffd6dc":"#fff";
+}
+
+async function saveCloud(data){
+ if(!user){status("Guardado local");return}
+ pending=JSON.parse(JSON.stringify(data));
+ if(saving)return;
+ saving=true;
+ try{
+  while(pending){
+   const copy=pending;pending=null;
+   status("Guardando en nube…");
+   await setDoc(doc(dbCloud,"users",user.uid,"app","state"),{
+    data:copy,updatedAt:serverTimestamp(),email:user.email||""
+   },{merge:true});
+  }
+  status("Guardado en la nube ✓");
+ }catch(e){
+  console.error(e);status("Error de nube",true);
+ }finally{saving=false}
+}
+window.katrielleCloud={save:saveCloud};
+
+async function loadCloud(){
+ status("Sincronizando…");
+ const ref=doc(dbCloud,"users",user.uid,"app","state");
+ const snap=await getDoc(ref);
+ if(snap.exists()&&snap.data()?.data){
+  window.setKatrielleData(snap.data().data);
+  status("Datos sincronizados ✓");
+ }else{
+  await saveCloud(window.getKatrielleData());
+  status("Datos locales subidos ✓");
+ }
+}
+
+authBtn.addEventListener("click",async()=>{
+ if(user){if(confirm("¿Cerrar sesión?"))await signOut(auth);return}
+ try{await signInWithPopup(auth,provider)}
+ catch(e){
+  console.error(e);
+  if(["auth/popup-blocked","auth/cancelled-popup-request"].includes(e.code))await signInWithRedirect(auth,provider);
+  else alert("No fue posible iniciar sesión: "+(e.message||e.code));
+ }
+});
+
+try{await getRedirectResult(auth)}catch(e){console.warn(e)}
+onAuthStateChanged(auth,async u=>{
+ user=u;
+ if(!u){authBtn.textContent="Entrar";status("Guardado local");return}
+ authBtn.textContent="Salir";authBtn.title=u.email||"";
+ try{await loadCloud()}
+ catch(e){
+  console.error(e);status("Configurar Firebase",true);
+  alert("Falta activar Google Authentication, Cloud Firestore o autorizar el dominio de GitHub Pages.");
+ }
+});
+</script>
+
 </body>
 </html>
