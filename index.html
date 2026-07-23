@@ -29,7 +29,18 @@
 <section id="more" class="view"><h2>Más herramientas</h2><div class="grid"><div class="card"><h3>Finanzas</h3><div class="row"><span>Ventas registradas</span><strong class="right" id="fSales">$0</strong></div><div class="row"><span>Anticipos recibidos</span><strong class="right" id="fDeposits">$0</strong></div><div class="row"><span>Saldos pendientes</span><strong class="right" id="fBalances">$0</strong></div></div><div class="card"><h3>Clientes</h3><div class="row"><span>Total de clientes</span><strong class="right" id="moreClients">0</strong></div><button class="secondary" style="margin-top:10px" onclick="openClient()">+ Agregar cliente</button><div id="clientsList" style="margin-top:10px"></div></div><div class="card"><h3>Respaldo de seguridad</h3><p class="muted">Exporta una copia regularmente para proteger tus datos.</p><div class="toolbar"><button class="primary" onclick="exportBackup()">Descargar respaldo</button><label class="btn secondary">Importar respaldo<input type="file" accept=".json" hidden onchange="importBackup(event)"></label></div><div class="notice">Los datos se guardan en este dispositivo. El respaldo evita perderlos.</div></div><div class="card"><h3>Instalar como app</h3><p class="muted">En iPhone: Safari → Compartir → Añadir a pantalla de inicio.</p></div></div></section>
 </main>
 <dialog id="orderDialog"><form class="modal" id="orderForm" method="dialog"><div class="modal-head"><h3 id="orderTitle">Nuevo pedido</h3><button type="button" class="close" onclick="orderDialog.close()">✕</button></div><input type="hidden" id="orderId"><div class="form-grid"><div><label>Cliente</label><input id="oClient" required></div><div><label>Teléfono</label><input id="oPhone"></div><div class="full"><label>Producto</label><input id="oProduct" required></div><div><label>Fecha de entrega</label><input id="oDate" type="date"></div><div><label>Hora</label><input id="oTime" type="time"></div><div><label>Precio</label><input id="oPrice" type="number" step="0.01" min="0"></div><div><label>Anticipo</label><input id="oDeposit" type="number" step="0.01" min="0"></div><div><label>Tipo de entrega</label><select id="oDelivery"><option>Recoge</option><option>Domicilio</option><option>Punto de encuentro</option></select></div><div><label>Costo de entrega</label><input id="oDeliveryCost" type="number" step="0.01" min="0"></div><div class="full"><label>Dirección o lugar</label><input id="oAddress"></div><div><label>Estado</label><select id="oStatus"><option>Cotización</option><option>Confirmado</option><option>Anticipo pendiente</option><option>Diseño</option><option>Aprobación</option><option>Producción</option><option>Empaque</option><option>Entregado</option></select></div><div><label>Diseño elegido</label><input id="oDesign"></div><div class="full"><label>Notas</label><textarea id="oNotes"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar pedido</button><button type="button" class="secondary" onclick="orderDialog.close()">Cancelar</button></div></form></dialog>
-<dialog id="taskDialog"><form class="modal" id="taskForm" method="dialog"><div class="modal-head"><h3 id="taskTitle">Nueva tarea</h3><button type="button" class="close" onclick="taskDialog.close()">✕</button></div><input type="hidden" id="taskId"><div class="form-grid"><div class="full"><label>Tarea</label><input id="tTitle" required></div><div><label>Fecha</label><input id="tDate" type="date" required></div><div><label>Hora de inicio</label><input id="tTime" type="time"></div><div><label>Hora final</label><input id="tEnd" type="time"></div><div><label>Categoría</label><select id="tCategory"><option>Katrielle</option><option>Trabajo</option><option>LLQP</option><option>Familia</option><option>Personal</option></select></div><div><label>Estado</label><select id="tDone"><option value="false">Pendiente</option><option value="true">Completada</option></select></div><div class="full"><label>Notas</label><textarea id="tNotes"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar tarea</button></div></form></dialog>
+<dialog id="taskDialog"><form class="modal" id="taskForm" method="dialog"><div class="modal-head"><h3 id="taskTitle">Nueva tarea</h3><button type="button" class="close" onclick="taskDialog.close()">✕</button></div><input type="hidden" id="taskId"><div class="form-grid"><div class="full"><label>Tarea</label><input id="tTitle" required></div><div><label>Fecha</label><input id="tDate" type="date" required></div><div><label>Hora de inicio</label><input id="tTime" type="time"></div><div><label>Hora final</label><input id="tEnd" type="time"></div><div><label>Categoría</label><select id="tCategory"><option>Katrielle</option><option>Trabajo</option><option>LLQP</option><option>Familia</option><option>Personal</option></select></div><div><label>Estado</label><select id="tDone"><option value="false">Pendiente</option><option value="true">Completada</option></select></div>
+<div><label>Repetir tarea</label>
+<select id="tRepeat" onchange="toggleRepeatFields()">
+<option value="none">No repetir</option>
+<option value="daily">Todos los días</option>
+<option value="weekly">Todas las semanas</option>
+<option value="biweekly">Cada 2 semanas</option>
+<option value="monthly">Todos los meses</option>
+</select></div>
+<div id="repeatUntilWrap" style="display:none"><label>Repetir hasta</label><input id="tRepeatUntil" type="date"></div>
+<div class="full" id="repeatHelp" style="display:none"><div class="notice">Se crearán automáticamente todas las tareas desde la fecha inicial hasta la fecha final.</div></div>
+<div class="full"><label>Notas</label><textarea id="tNotes"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar tarea</button></div></form></dialog>
 <dialog id="clientDialog"><form class="modal" id="clientForm" method="dialog"><div class="modal-head"><h3>Cliente</h3><button type="button" class="close" onclick="clientDialog.close()">✕</button></div><input type="hidden" id="clientId"><div class="form-grid"><div><label>Nombre</label><input id="cName" required></div><div><label>Teléfono</label><input id="cPhone"></div><div><label>Email</label><input id="cEmail" type="email"></div><div><label>Instagram</label><input id="cInstagram"></div><div class="full"><label>Dirección</label><input id="cAddress"></div><div class="full"><label>Notas</label><textarea id="cNotes"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar cliente</button></div></form></dialog>
 <script>
 const KEY='katrielle-control-v1';
@@ -55,13 +66,78 @@ function renderAll(){renderDashboard();renderPlan();renderOrders();renderAgenda(
 function renderDashboard(){const active=db.orders.filter(o=>o.status!=='Entregado');$('sActive').textContent=active.length;$('sBalance').textContent=money(db.orders.reduce((s,o)=>s+Math.max(0,(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0)),0));const next=[...active].filter(o=>o.date).sort((a,b)=>a.date.localeCompare(b.date));$('sNext').textContent=next[0]?dateLabel(next[0].date).slice(0,5):'—';$('sClients').textContent=db.clients.length;$('moreClients').textContent=db.clients.length;$('nextOrders').innerHTML=next.length?next.slice(0,5).map(o=>`<div class="muted" style="margin:6px 0"><b>${dateLabel(o.date).slice(0,5)}</b> · <strong>${esc(o.product)}</strong> · ${esc(o.client)}</div>`).join(''):'<div class="empty">No hay entregas próximas.</div>';$('priorityBox').textContent=next.length>2?'No aceptes pedidos nuevos hasta terminar primero lo urgente.':next.length?'Empieza por la entrega más cercana: '+next[0].product+'.':'No hay entregas pendientes.';$('llqpHours').value=db.llqp.hours;$('llqpGoal').value=db.llqp.goal;const pct=Math.min(100,(db.llqp.hours/db.llqp.goal)*100||0);$('llqpProgress').value=pct;$('llqpText').textContent=`${db.llqp.hours} de ${db.llqp.goal} horas`}
 $('llqpHours').onchange=()=>{db.llqp.hours=+$('llqpHours').value||0;save()};$('llqpGoal').onchange=()=>{db.llqp.goal=+$('llqpGoal').value||8;save()};
 function renderPlan(){const date=$('planDate').value||new Date().toISOString().slice(0,10);$('planDate').value=date;const list=db.tasks.filter(t=>t.date===date).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));$('planList').innerHTML=list.length?list.map(t=>`<div class="task-line ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${t.id}')"><div class="task-time">${t.time||'—'}${t.end?'–'+t.end:''}</div><div><b>${esc(t.title)}</b><div class="muted">${esc(t.category)}${t.notes?' · '+esc(t.notes):''}</div></div><div class="task-actions"><button class="secondary mini" onclick="editTask('${t.id}')">Editar</button></div></div>`).join(''):'<div class="empty">No hay tareas para esta fecha.</div>'}
-function openTaskForPlan(){$('taskForm').reset();$('taskId').value='';$('taskTitle').textContent='Nueva tarea';$('tDate').value=$('planDate').value;taskDialog.showModal()}
+function openTaskForPlan(){$('taskForm').reset();$('taskId').value='';$('taskTitle').textContent='Nueva tarea';$('tDate').value=$('planDate').value;$('tRepeat').value='none';$('tRepeatUntil').value='';toggleRepeatFields();taskDialog.showModal()}
 function renderOrders(){const q=($('orderSearch')?.value||'').toLowerCase(),f=$('orderFilter')?.value||'';const list=db.orders.filter(o=>(!q||(o.client+' '+o.product).toLowerCase().includes(q))&&(!f||o.status===f)).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));$('ordersList').innerHTML=list.length?list.map(o=>{const bal=(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0);return `<div class="item"><div class="item-head"><div><b>${esc(o.product)}</b><div class="muted">${esc(o.client)} · ${esc(o.phone||'Sin teléfono')}</div></div><span class="badge">${esc(o.status)}</span></div><div class="row" style="margin-top:8px"><span>📅 ${dateLabel(o.date)} ${o.time||''}</span><span>🚚 ${esc(o.delivery||'')}</span><span class="money right">Saldo ${money(bal)}</span></div><div class="muted">${esc(o.address||'')}${o.notes?' · '+esc(o.notes):''}</div><div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="editOrder('${o.id}')">Editar</button><button class="danger" onclick="deleteOrder('${o.id}')">Eliminar</button></div></div>`}).join(''):'<div class="empty">No hay pedidos.</div>'}
 function openOrder(){orderForm.reset();orderId.value='';orderTitle.textContent='Nuevo pedido';orderDialog.showModal()}function editOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;orderTitle.textContent='Editar pedido';orderId.value=o.id;oClient.value=o.client;oPhone.value=o.phone;oProduct.value=o.product;oDate.value=o.date;oTime.value=o.time;oPrice.value=o.price;oDeposit.value=o.deposit;oDelivery.value=o.delivery;oDeliveryCost.value=o.deliveryCost;oAddress.value=o.address;oStatus.value=o.status;oDesign.value=o.design;oNotes.value=o.notes;orderDialog.showModal()}function deleteOrder(id){if(confirm('¿Eliminar este pedido?')){db.orders=db.orders.filter(x=>x.id!==id);save()}}
 orderForm.onsubmit=e=>{e.preventDefault();const id=orderId.value||crypto.randomUUID();const o={id,client:oClient.value.trim(),phone:oPhone.value.trim(),product:oProduct.value.trim(),date:oDate.value,time:oTime.value,price:+oPrice.value||0,deposit:+oDeposit.value||0,delivery:oDelivery.value,deliveryCost:+oDeliveryCost.value||0,address:oAddress.value.trim(),status:oStatus.value,design:oDesign.value.trim(),notes:oNotes.value.trim()};const i=db.orders.findIndex(x=>x.id===id);if(i>=0)db.orders[i]=o;else db.orders.push(o);if(o.client&&!db.clients.some(c=>c.name.toLowerCase()===o.client.toLowerCase()))db.clients.push({id:crypto.randomUUID(),name:o.client,phone:o.phone,email:'',instagram:'',address:o.address,notes:''});orderDialog.close();save()};
 function renderAgenda(){const list=[...db.tasks].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));$('agendaList').innerHTML=list.length?list.map(t=>`<div class="item" style="opacity:${t.done?.6:1}"><div class="item-head"><div><b>${t.done?'✅ ':''}${esc(t.title)}</b><div class="muted">${dateLabel(t.date)} ${t.time||''}${t.end?'–'+t.end:''} · ${esc(t.category)}</div></div></div><div class="muted">${esc(t.notes||'')}</div><div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="toggleTask('${t.id}')">${t.done?'Reabrir':'Completar'}</button><button class="secondary" onclick="editTask('${t.id}')">Editar</button><button class="danger" onclick="deleteTask('${t.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">No hay tareas.</div>'}
-function openTask(){taskForm.reset();taskId.value='';taskTitle.textContent='Nueva tarea';tDate.value=new Date().toISOString().slice(0,10);taskDialog.showModal()}function editTask(id){const t=db.tasks.find(x=>x.id===id);if(!t)return;taskTitle.textContent='Editar tarea';taskId.value=t.id;tTitle.value=t.title;tDate.value=t.date;tTime.value=t.time||'';tEnd.value=t.end||'';tCategory.value=t.category;tDone.value=String(!!t.done);tNotes.value=t.notes||'';taskDialog.showModal()}
-taskForm.onsubmit=e=>{e.preventDefault();const id=taskId.value||crypto.randomUUID();const t={id,title:tTitle.value.trim(),date:tDate.value,time:tTime.value,end:tEnd.value,category:tCategory.value,done:tDone.value==='true',notes:tNotes.value.trim()};const i=db.tasks.findIndex(x=>x.id===id);if(i>=0)db.tasks[i]=t;else db.tasks.push(t);taskDialog.close();save()};function toggleTask(id){const t=db.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save()}}function deleteTask(id){if(confirm('¿Eliminar esta tarea?')){db.tasks=db.tasks.filter(x=>x.id!==id);save()}}
+
+function toggleRepeatFields(){
+ const recurring=tRepeat.value!=='none';
+ repeatUntilWrap.style.display=recurring?'block':'none';
+ repeatHelp.style.display=recurring?'block':'none';
+ tRepeatUntil.required=recurring;
+ if(recurring && !tRepeatUntil.value){
+  const d=new Date((tDate.value||new Date().toISOString().slice(0,10))+'T12:00:00');
+  d.setMonth(d.getMonth()+3);
+  tRepeatUntil.value=d.toISOString().slice(0,10);
+ }
+}
+function addDays(dateString,days){
+ const d=new Date(dateString+'T12:00:00');
+ d.setDate(d.getDate()+days);
+ return d.toISOString().slice(0,10);
+}
+function addMonths(dateString,months){
+ const d=new Date(dateString+'T12:00:00');
+ const originalDay=d.getDate();
+ d.setDate(1);
+ d.setMonth(d.getMonth()+months);
+ const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+ d.setDate(Math.min(originalDay,lastDay));
+ return d.toISOString().slice(0,10);
+}
+function recurrenceDates(start,until,type){
+ const dates=[];
+ let current=start;
+ let safety=0;
+ while(current<=until && safety<500){
+  dates.push(current);
+  if(type==='daily') current=addDays(current,1);
+  else if(type==='weekly') current=addDays(current,7);
+  else if(type==='biweekly') current=addDays(current,14);
+  else if(type==='monthly') current=addMonths(current,1);
+  else break;
+  safety++;
+ }
+ return dates;
+}
+function openTask(){
+ taskForm.reset();taskId.value='';taskTitle.textContent='Nueva tarea';
+ tDate.value=new Date().toISOString().slice(0,10);
+ tRepeat.value='none';tRepeatUntil.value='';toggleRepeatFields();
+ taskDialog.showModal()
+}function editTask(id){const t=db.tasks.find(x=>x.id===id);if(!t)return;taskTitle.textContent='Editar tarea';taskId.value=t.id;tTitle.value=t.title;tDate.value=t.date;tTime.value=t.time||'';tEnd.value=t.end||'';tCategory.value=t.category;tDone.value=String(!!t.done);tRepeat.value='none';tRepeatUntil.value='';toggleRepeatFields();tNotes.value=t.notes||'';taskDialog.showModal()}
+taskForm.onsubmit=e=>{
+ e.preventDefault();
+ const editingId=taskId.value;
+ const base={title:tTitle.value.trim(),date:tDate.value,time:tTime.value,end:tEnd.value,category:tCategory.value,done:tDone.value==='true',notes:tNotes.value.trim()};
+ if(editingId){
+  const i=db.tasks.findIndex(x=>x.id===editingId);
+  if(i>=0)db.tasks[i]={...base,id:editingId};
+ }else if(tRepeat.value!=='none'){
+  if(!tRepeatUntil.value || tRepeatUntil.value<tDate.value){
+   alert('Selecciona una fecha final igual o posterior a la fecha inicial.');
+   return;
+  }
+  const seriesId=crypto.randomUUID();
+  const dates=recurrenceDates(tDate.value,tRepeatUntil.value,tRepeat.value);
+  dates.forEach(date=>db.tasks.push({...base,id:crypto.randomUUID(),date,seriesId,repeatType:tRepeat.value,repeatUntil:tRepeatUntil.value}));
+ }else{
+  db.tasks.push({...base,id:crypto.randomUUID()});
+ }
+ taskDialog.close();save()
+};function toggleTask(id){const t=db.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save()}}function deleteTask(id){if(confirm('¿Eliminar esta tarea?')){db.tasks=db.tasks.filter(x=>x.id!==id);save()}}
 function renderClients(){const list=[...db.clients].sort((a,b)=>a.name.localeCompare(b.name));$('clientsList').innerHTML=list.length?list.slice(0,8).map(c=>`<div class="item"><b>${esc(c.name)}</b><div class="muted">${esc(c.phone||'Sin teléfono')} ${c.email?'· '+esc(c.email):''}</div><div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="editClient('${c.id}')">Editar</button><button class="danger" onclick="deleteClient('${c.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">No hay clientes.</div>'}
 function openClient(){clientForm.reset();clientId.value='';clientDialog.showModal()}function editClient(id){const c=db.clients.find(x=>x.id===id);if(!c)return;clientId.value=c.id;cName.value=c.name;cPhone.value=c.phone;cEmail.value=c.email;cInstagram.value=c.instagram;cAddress.value=c.address;cNotes.value=c.notes;clientDialog.showModal()}function deleteClient(id){if(confirm('¿Eliminar este cliente?')){db.clients=db.clients.filter(x=>x.id!==id);save()}}clientForm.onsubmit=e=>{e.preventDefault();const id=clientId.value||crypto.randomUUID();const c={id,name:cName.value.trim(),phone:cPhone.value.trim(),email:cEmail.value.trim(),instagram:cInstagram.value.trim(),address:cAddress.value.trim(),notes:cNotes.value.trim()};const i=db.clients.findIndex(x=>x.id===id);if(i>=0)db.clients[i]=c;else db.clients.push(c);clientDialog.close();save()};
 function calculateQuote(){const materials=+$('qMaterials').value||0,other=+$('qOther').value||0,hours=+$('qHours').value||0,hourly=+$('qHourly').value||0,margin=+$('qMargin').value||0,qty=Math.max(1,+$('qQty').value||1);const cost=materials+other+(hours*hourly);const price=cost*(1+margin/100);$('qCost').textContent=money(cost);$('qPrice').textContent=money(price);$('qUnit').textContent=money(price/qty);$('qProfit').textContent=money(price-cost);return{product:$('qProduct').value.trim(),materials,other,hours,hourly,margin,qty,cost,price,unit:price/qty,profit:price-cost}}

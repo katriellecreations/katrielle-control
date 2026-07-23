@@ -1,12 +1,19 @@
-# Katrielle Control v3
+# Katrielle Control v3.1 — tareas recurrentes
 
-## Sube a GitHub
-Reemplaza index.html, manifest.webmanifest y sw.js.
+Nueva función:
+- Repetir tareas todos los días.
+- Repetir todas las semanas.
+- Repetir cada 2 semanas.
+- Repetir todos los meses.
+- Seleccionar una fecha final.
 
-## Activa Firebase
-1. Authentication > Comenzar > Google > Activar.
-2. Authentication > Configuración > Dominios autorizados > agrega katriellecreations.github.io
-3. Firestore Database > Crear base de datos > modo producción.
-4. Firestore > Reglas > pega el contenido de firestore.rules > Publicar.
+Ejemplo:
+Curso LLQP, sábado 10:00 a 12:00, repetir semanalmente hasta diciembre.
 
-Al entrar por primera vez con Google, los datos locales actuales se subirán automáticamente.
+## Para actualizar GitHub
+Reemplaza:
+- index.html
+- sw.js
+- manifest.webmanifest
+
+No necesitas cambiar Firebase ni las reglas de Firestore.
