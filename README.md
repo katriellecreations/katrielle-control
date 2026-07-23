@@ -1,26 +1,19 @@
-# Katrielle Control
+# Katrielle Control v2
 
-Aplicación web móvil para gestionar Katrielle Creations.
-
-## Funciones
-- Dashboard
+Incluye:
+- Plan por fecha
+- Agenda
 - Pedidos
 - Clientes
-- Agenda
 - Finanzas
-- LLQP
-- Respaldo e importación de datos
-- Instalación como app
+- Cotizador automático
+- Cálculos guardados
+- Respaldo de seguridad
 
-## Publicar con GitHub Pages
-1. Sube `index.html`, `manifest.webmanifest` y `sw.js` a la rama `main`.
-2. Abre **Settings → Pages**.
-3. En **Build and deployment**, selecciona **Deploy from a branch**.
-4. Elige `main` y `/root`.
-5. Guarda.
+## Publicación
+Reemplaza en GitHub los archivos:
+- index.html
+- manifest.webmanifest
+- sw.js
 
-La dirección será:
-`https://katriellecreations.github.io/katrielle-control/`
-
-## Almacenamiento
-Esta primera versión usa almacenamiento local del navegador y permite descargar/importar respaldos JSON. Para sincronización real entre dispositivos debe conectarse a Firebase o Supabase.
+GitHub Pages actualizará el mismo enlace automáticamente.
