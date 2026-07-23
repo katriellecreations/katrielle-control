@@ -95,7 +95,7 @@
 <section id="quotes" class="view"><div class="row"><h2>Cotizador automático</h2><button class="secondary right" onclick="resetQuote()">Limpiar</button></div><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"><div class="card"><div class="form-grid"><div class="full"><label>Producto</label><input id="qProduct" placeholder="Ej. Taza personalizada"></div><div><label>Materiales (CAD)</label><input id="qMaterials" type="number" min="0" step="0.01" value="0" oninput="calculateQuote()"></div><div><label>Otros gastos (CAD)</label><input id="qOther" type="number" min="0" step="0.01" value="0" oninput="calculateQuote()"></div><div><label>Horas de trabajo</label><input id="qHours" type="number" min="0" step="0.25" value="1" oninput="calculateQuote()"></div><div><label>Valor de tu hora</label><input id="qHourly" type="number" min="0" step="0.01" value="20" oninput="calculateQuote()"></div><div><label>Ganancia deseada (%)</label><input id="qMargin" type="number" min="0" step="1" value="35" oninput="calculateQuote()"></div><div><label>Cantidad</label><input id="qQty" type="number" min="1" step="1" value="1" oninput="calculateQuote()"></div></div></div><div class="quote-result"><div class="muted">Costo total de producción</div><div id="qCost" style="font-size:20px;font-weight:800">$0</div><div class="muted" style="margin-top:12px">Precio sugerido total</div><div id="qPrice" class="quote-price">$0</div><div class="muted">Precio por unidad: <b id="qUnit">$0</b></div><div class="muted">Ganancia estimada: <b id="qProfit">$0</b></div><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="quoteToOrder()">Convertir en pedido</button><button class="secondary" onclick="saveQuote()">Guardar cálculo</button></div></div></div><div class="card" style="margin-top:12px"><h3>Cálculos guardados</h3><div id="savedQuotes"></div></div></section>
 <section id="more" class="view"><h2>Más herramientas</h2><div class="grid"><div class="card"><h3>Finanzas</h3><div class="row"><span>Ventas registradas</span><strong class="right" id="fSales">$0</strong></div><div class="row"><span>Anticipos recibidos</span><strong class="right" id="fDeposits">$0</strong></div><div class="row"><span>Saldos pendientes</span><strong class="right" id="fBalances">$0</strong></div></div><div class="card"><h3>Clientes</h3><div class="row"><span>Total de clientes</span><strong class="right" id="moreClients">0</strong></div><button class="secondary" style="margin-top:10px" onclick="openClient()">+ Agregar cliente</button><div id="clientsList" style="margin-top:10px"></div></div><div class="card"><h3>Respaldo de seguridad</h3><p class="muted">Exporta una copia regularmente para proteger tus datos.</p><div class="toolbar"><button class="primary" onclick="exportBackup()">Descargar respaldo</button><label class="btn secondary">Importar respaldo<input type="file" accept=".json" hidden onchange="importBackup(event)"></label></div><div class="notice">Los datos se guardan en este dispositivo. El respaldo evita perderlos.</div></div><div class="card"><h3>Instalar como app</h3><p class="muted">En iPhone: Safari → Compartir → Añadir a pantalla de inicio.</p></div></div></section>
 </main>
-<dialog id="orderDialog"><form class="modal" id="orderForm" method="dialog"><div class="modal-head"><h3 id="orderTitle">Nuevo pedido</h3><button type="button" class="close" onclick="orderDialog.close()">✕</button></div><input type="hidden" id="orderId"><div class="form-grid"><div><label>Cliente</label><input id="oClient" required></div>
+<dialog id="orderDialog"><form class="modal" id="orderForm" method="dialog"><div class="modal-head"><h3 id="orderTitle">Nuevo pedido</h3><button type="button" class="close" onclick="document.getElementById('orderDialog').close()">✕</button></div><input type="hidden" id="orderId"><div class="form-grid"><div><label>Cliente</label><input id="oClient" required></div>
 <div><label>Teléfono</label><input id="oPhone"></div>
 <div><label>Categoría</label>
 <select id="oCategory" onchange="applyOrderTemplate()">
@@ -117,8 +117,8 @@ Nombre: Liam Pena
 Personaje: León
 Color: Azul
 Combo: 119 etiquetas"></textarea></div>
-<div class="full"><label>Notas adicionales</label><textarea id="oNotes" placeholder="Detalles de entrega, cambios u observaciones del cliente…"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar pedido</button><button type="button" class="secondary" onclick="orderDialog.close()">Cancelar</button></div></form></dialog>
-<dialog id="taskDialog"><form class="modal" id="taskForm" method="dialog"><div class="modal-head"><h3 id="taskTitle">Nueva tarea</h3><button type="button" class="close" onclick="taskDialog.close()">✕</button></div><input type="hidden" id="taskId"><div class="form-grid"><div class="full"><label>Tarea</label><input id="tTitle" required></div><div><label>Fecha</label><input id="tDate" type="date" required></div><div><label>Hora de inicio</label><input id="tTime" type="time"></div><div><label>Hora final</label><input id="tEnd" type="time"></div><div><label>Categoría</label><select id="tCategory"><option>Katrielle</option><option>Trabajo</option><option>LLQP</option><option>Familia</option><option>Personal</option></select></div><div><label>Estado</label><select id="tDone"><option value="false">Pendiente</option><option value="true">Completada</option></select></div>
+<div class="full"><label>Notas adicionales</label><textarea id="oNotes" placeholder="Detalles de entrega, cambios u observaciones del cliente…"></textarea></div></div><div class="toolbar" style="margin-top:14px"><button class="primary" type="submit">Guardar pedido</button><button class="secondary" type="button" onclick="generateTasksFromCurrentOrder()">Crear tareas automáticamente</button><button type="button" class="secondary" onclick="document.getElementById('orderDialog').close()">Cancelar</button></div></form></dialog>
+<dialog id="taskDialog"><form class="modal" id="taskForm" method="dialog"><div class="modal-head"><h3 id="taskTitle">Nueva tarea</h3><button type="button" class="close" onclick="document.getElementById('taskDialog').close()">✕</button></div><input type="hidden" id="taskId"><div class="form-grid"><div class="full"><label>Tarea</label><input id="tTitle" required></div><div><label>Fecha</label><input id="tDate" type="date" required></div><div><label>Hora de inicio</label><input id="tTime" type="time"></div><div><label>Hora final</label><input id="tEnd" type="time"></div><div><label>Categoría</label><select id="tCategory"><option>Katrielle</option><option>Trabajo</option><option>LLQP</option><option>Familia</option><option>Personal</option></select></div><div><label>Estado</label><select id="tDone"><option value="false">Pendiente</option><option value="true">Completada</option></select></div>
 <div><label>Repetir tarea</label>
 <select id="tRepeat" onchange="toggleRepeatFields()">
 <option value="none">No repetir</option>
@@ -329,10 +329,8 @@ function tasksConflict(a,b){
  return as<be&&bs<ae;
 }
 function findTaskConflicts(tasks,ignoreId=''){
- const found=[];
- tasks.forEach(n=>db.tasks.forEach(old=>{
-  if(old.id!==ignoreId&&!old.done&&tasksConflict(n,old)&&!found.some(x=>x.id===old.id))found.push(old);
- }));
+ const found=[],existing=[...db.tasks.filter(t=>t.id!==ignoreId&&!t.done),...db.orders.map(orderAsTask).filter(Boolean)];
+ tasks.forEach(n=>existing.forEach(old=>{if(tasksConflict(n,old)&&!found.some(x=>x.id===old.id))found.push(old)}));
  return found;
 }
 let pendingTaskSave=null;
@@ -344,11 +342,7 @@ function showTaskConflicts(conflicts,payload){
 }
 function commitTaskPayload(payload,replace=false){
  if(replace&&payload.conflictIds?.length)db.tasks=db.tasks.filter(t=>!payload.conflictIds.includes(t.id));
- if(payload.editingId){
-  const i=db.tasks.findIndex(x=>x.id===payload.editingId);
-  if(i>=0)db.tasks[i]={...payload.tasks[0],id:payload.editingId};
- }else payload.tasks.forEach(t=>db.tasks.push(t));
- save();
+ saveEditedTaskPayload(payload);
 }
 function keepNewTask(){if(!pendingTaskSave)return;commitTaskPayload({...pendingTaskSave.payload,conflictIds:pendingTaskSave.conflicts.map(x=>x.id)});pendingTaskSave=null;conflictDialog.close()}
 function replaceConflictingTasks(){if(!pendingTaskSave)return;commitTaskPayload({...pendingTaskSave.payload,conflictIds:pendingTaskSave.conflicts.map(x=>x.id)},true);pendingTaskSave=null;conflictDialog.close()}
@@ -358,30 +352,76 @@ function openTask(){
  tRepeat.value='none';tRepeatUntil.value='';document.querySelectorAll('.repeat-day').forEach(c=>c.checked=false);toggleRepeatFields();taskDialog.showModal()
 }
 function editTask(id){
- const t=db.tasks.find(x=>x.id===id);if(!t)return;taskTitle.textContent='Editar tarea';taskId.value=t.id;tTitle.value=t.title;tDate.value=t.date;
- tTime.value=t.time||'';tEnd.value=t.end||'';tCategory.value=t.category;tDone.value=String(!!t.done);tRepeat.value='none';tRepeatUntil.value='';
- document.querySelectorAll('.repeat-day').forEach(c=>c.checked=false);toggleRepeatFields();tNotes.value=t.notes||'';taskDialog.showModal()
+ const t=db.tasks.find(x=>x.id===id);
+ if(!t){alert('No se encontró la tarea. Actualiza la página e inténtalo nuevamente.');return}
+ const form=document.getElementById('taskForm');
+ form.reset();
+ document.getElementById('taskTitle').textContent='Editar tarea';
+ document.getElementById('taskId').value=t.id;
+ document.getElementById('tTitle').value=t.title||'';
+ document.getElementById('tDate').value=t.date||'';
+ document.getElementById('tTime').value=t.time||'';
+ document.getElementById('tEnd').value=t.end||'';
+ const category=document.getElementById('tCategory');
+ category.value=[...category.options].some(o=>o.value===t.category)?t.category:'Katrielle';
+ document.getElementById('tDone').value=String(!!t.done);
+ document.getElementById('tNotes').value=t.notes||'';
+ document.getElementById('tRepeat').value=t.repeatType||'none';
+ document.getElementById('tRepeatUntil').value=t.repeatUntil||'';
+ document.querySelectorAll('.repeat-day').forEach(c=>c.checked=(t.repeatDays||[]).map(Number).includes(+c.value));
+ toggleRepeatFields();
+ document.getElementById('taskDialog').showModal();
 }
-taskForm.onsubmit=e=>{
+document.getElementById('taskForm').onsubmit=e=>{
  e.preventDefault();
- if(tTime.value&&tEnd.value&&timeMinutes(tEnd.value)<=timeMinutes(tTime.value)){alert('La hora final debe ser posterior a la hora de inicio.');return}
- const editingId=taskId.value;
- const base={title:tTitle.value.trim(),date:tDate.value,time:tTime.value,end:tEnd.value,category:tCategory.value,done:tDone.value==='true',notes:tNotes.value.trim()};
- let tasks=[];
- if(editingId)tasks=[{...base,id:editingId}];
- else if(tRepeat.value!=='none'){
-  if(!tRepeatUntil.value||tRepeatUntil.value<tDate.value){alert('Selecciona una fecha final igual o posterior a la fecha inicial.');return}
-  const days=selectedRepeatDays();
-  if(tRepeat.value==='custom'&&!days.length){alert('Selecciona al menos un día de la semana.');return}
-  const dates=recurrenceDates(tDate.value,tRepeatUntil.value,tRepeat.value,days),seriesId=crypto.randomUUID();
-  tasks=dates.map(date=>({...base,id:crypto.randomUUID(),date,seriesId,repeatType:tRepeat.value,repeatUntil:tRepeatUntil.value,repeatDays:days}));
- }else tasks=[{...base,id:crypto.randomUUID()}];
- if(!tasks.length){alert('No se generó ninguna tarea con los días elegidos.');return}
+ const g=id=>document.getElementById(id);
+ if(g('tTime').value&&g('tEnd').value&&timeMinutes(g('tEnd').value)<=timeMinutes(g('tTime').value)){alert('La hora final debe ser posterior a la hora de inicio.');return}
+ const editingId=g('taskId').value;
+ const original=editingId?db.tasks.find(x=>x.id===editingId):null;
+ const base={title:g('tTitle').value.trim(),date:g('tDate').value,time:g('tTime').value,end:g('tEnd').value,category:g('tCategory').value,done:g('tDone').value==='true',notes:g('tNotes').value.trim()};
+ let tasks=[],payload;
+ if(editingId){
+   let scope='single';
+   if(original?.seriesId){
+     const choice=prompt('Esta tarea pertenece a una serie.\nEscribe:\n1 = Solo esta tarea\n2 = Toda la serie\n3 = Esta y las siguientes','1');
+     if(choice==='2')scope='series';
+     else if(choice==='3')scope='following';
+   }
+   tasks=[{...original,...base,id:editingId}];
+   payload={tasks,editingId,scope,original};
+ }else if(g('tRepeat').value!=='none'){
+   if(!g('tRepeatUntil').value||g('tRepeatUntil').value<g('tDate').value){alert('Selecciona una fecha final igual o posterior a la fecha inicial.');return}
+   const days=selectedRepeatDays();
+   if(g('tRepeat').value==='custom'&&!days.length){alert('Selecciona al menos un día de la semana.');return}
+   const dates=recurrenceDates(g('tDate').value,g('tRepeatUntil').value,g('tRepeat').value,days),seriesId=crypto.randomUUID();
+   tasks=dates.map(date=>({...base,id:crypto.randomUUID(),date,seriesId,repeatType:g('tRepeat').value,repeatUntil:g('tRepeatUntil').value,repeatDays:days}));
+   payload={tasks,scope:'new'};
+ }else{
+   tasks=[{...base,id:crypto.randomUUID()}];
+   payload={tasks,scope:'new'};
+ }
  const conflicts=findTaskConflicts(tasks,editingId);
- const payload={tasks,editingId};
  if(conflicts.length){showTaskConflicts(conflicts,payload);return}
- taskDialog.close();commitTaskPayload(payload);
+ document.getElementById('taskDialog').close();
+ saveEditedTaskPayload(payload);
 };
+function saveEditedTaskPayload(payload){
+ if(payload.scope==='single'){
+   const i=db.tasks.findIndex(x=>x.id===payload.editingId);
+   if(i>=0)db.tasks[i]=payload.tasks[0];
+ }else if(payload.scope==='series'){
+   const seriesId=payload.original.seriesId;
+   db.tasks=db.tasks.map(t=>t.seriesId===seriesId?{...t,title:payload.tasks[0].title,time:payload.tasks[0].time,end:payload.tasks[0].end,category:payload.tasks[0].category,done:payload.tasks[0].done,notes:payload.tasks[0].notes}:t);
+ }else if(payload.scope==='following'){
+   const seriesId=payload.original.seriesId,fromDate=payload.original.date,newDate=payload.tasks[0].date;
+   const delta=Math.round((new Date(newDate+'T12:00:00')-new Date(fromDate+'T12:00:00'))/86400000);
+   db.tasks=db.tasks.map(t=>{
+     if(t.seriesId!==seriesId||t.date<fromDate)return t;
+     return {...t,title:payload.tasks[0].title,date:addDays(t.date,delta),time:payload.tasks[0].time,end:payload.tasks[0].end,category:payload.tasks[0].category,done:payload.tasks[0].done,notes:payload.tasks[0].notes};
+   });
+ }else payload.tasks.forEach(t=>db.tasks.push(t));
+ save();
+}
 function toggleTask(id){const t=db.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save()}}
 function deleteTask(id){if(confirm('¿Eliminar esta tarea?')){db.tasks=db.tasks.filter(x=>x.id!==id);save()}}
 
@@ -436,6 +476,54 @@ function saveSmartPlan(){
  const conflicts=findTaskConflicts(smartPlanSuggestions);
  if(conflicts.length){alert('El plan cambió y ahora hay cruces. Vuelve a pulsar “Organizar mi día” para recalcular.');return}
  smartPlanSuggestions.forEach(t=>db.tasks.push(t));smartPlanSuggestions=[];smartPlanResult.innerHTML='<div class="notice">✅ El plan fue agregado a tu agenda.</div>';saveSmartPlanBtn.style.display='none';save();
+}
+
+function orderAsTask(order){
+ if(!order.date||!order.time)return null;
+ const start=timeMinutes(order.time);
+ return {id:'order-'+order.id,title:'Entrega: '+order.product+' — '+order.client,date:order.date,time:order.time,end:minutesTime(start+60),category:'Entrega',done:order.status==='Entregado',notes:order.address||order.delivery||''};
+}
+function estimateOrderMinutes(order){
+ const s=((order.category||'')+' '+(order.product||'')).toLowerCase();
+ if(s.includes('etiquet')||s.includes('sticker'))return 90;
+ if(s.includes('desayuno'))return 120;
+ if(s.includes('libro')||s.includes('cuaderno'))return 180;
+ if(s.includes('taza')||s.includes('termo'))return 75;
+ if(s.includes('cake topper'))return 60;
+ if(s.includes('ramo'))return 90;
+ if(s.includes('3d'))return 120;
+ if(s.includes('llavero'))return 60;
+ return 90;
+}
+function buildOrderProductionSteps(order){
+ const total=estimateOrderMinutes(order),cat=(order.category||'').toLowerCase();
+ if(cat.includes('sticker')||cat.includes('etiquet'))return [['Diseñar',25],['Imprimir y laminar',25],['Cortar en Cricut',30],['Empacar',10]];
+ if(cat.includes('libro')||cat.includes('cuaderno'))return [['Preparar diseño',60],['Imprimir páginas',45],['Armar y encuadernar',60],['Revisar y empacar',15]];
+ if(cat.includes('desayuno'))return [['Preparar decoración',30],['Preparar alimentos',60],['Armar y empacar',30]];
+ if(cat.includes('taza')||cat.includes('termo'))return [['Preparar diseño',25],['Imprimir y sublimar',35],['Revisar y empacar',15]];
+ return [['Diseñar o preparar',Math.round(total*.4)],['Producir',Math.round(total*.45)],['Revisar y empacar',Math.max(15,total-Math.round(total*.85))]];
+}
+function generateTasksFromCurrentOrder(){
+ const id=document.getElementById('orderId').value;
+ const order=id?db.orders.find(o=>o.id===id):{
+  id:'draft',client:document.getElementById('oClient').value.trim(),product:document.getElementById('oProduct').value.trim(),
+  category:document.getElementById('oCategory').value,date:document.getElementById('oDate').value,time:document.getElementById('oTime').value,
+  status:document.getElementById('oStatus').value,address:document.getElementById('oAddress').value.trim(),delivery:document.getElementById('oDelivery').value
+ };
+ if(!order.product||!order.date){alert('Primero indica el producto y la fecha de entrega.');return}
+ const dayBefore=addDays(order.date,-1),steps=buildOrderProductionSteps(order);
+ let cursor=9*60;
+ const tasks=steps.map(([name,duration])=>{
+   const t={id:crypto.randomUUID(),title:`${name}: ${order.product} — ${order.client||'Cliente'}`,date:dayBefore,time:minutesTime(cursor),end:minutesTime(cursor+duration),category:'Katrielle',done:false,notes:`Pedido con entrega ${dateLabel(order.date)}.`,orderId:order.id};
+   cursor+=duration+15;return t;
+ });
+ const conflicts=findTaskConflicts(tasks);
+ if(conflicts.length){
+   alert('Estas tareas se cruzan con otros compromisos. Guarda el pedido y usa el Organizador inteligente para ubicarlas en espacios libres.');
+   return;
+ }
+ tasks.forEach(t=>db.tasks.push(t));save();
+ alert('Se crearon '+tasks.length+' tareas de producción.');
 }
 function renderClients(){const list=[...db.clients].sort((a,b)=>a.name.localeCompare(b.name));$('clientsList').innerHTML=list.length?list.slice(0,8).map(c=>`<div class="item"><b>${esc(c.name)}</b><div class="muted">${esc(c.phone||'Sin teléfono')} ${c.email?'· '+esc(c.email):''}</div><div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="editClient('${c.id}')">Editar</button><button class="danger" onclick="deleteClient('${c.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">No hay clientes.</div>'}
 function openClient(){clientForm.reset();clientId.value='';clientDialog.showModal()}function editClient(id){const c=db.clients.find(x=>x.id===id);if(!c)return;clientId.value=c.id;cName.value=c.name;cPhone.value=c.phone;cEmail.value=c.email;cInstagram.value=c.instagram;cAddress.value=c.address;cNotes.value=c.notes;clientDialog.showModal()}function deleteClient(id){if(confirm('¿Eliminar este cliente?')){db.clients=db.clients.filter(x=>x.id!==id);save()}}clientForm.onsubmit=e=>{e.preventDefault();const id=clientId.value||crypto.randomUUID();const c={id,name:cName.value.trim(),phone:cPhone.value.trim(),email:cEmail.value.trim(),instagram:cInstagram.value.trim(),address:cAddress.value.trim(),notes:cNotes.value.trim()};const i=db.clients.findIndex(x=>x.id===id);if(i>=0)db.clients[i]=c;else db.clients.push(c);clientDialog.close();save()};
