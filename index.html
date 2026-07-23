@@ -9,6 +9,21 @@
 <style>
 :root{--lav:#7448b0;--lav2:#eadff7;--gold:#c7a24b;--bg:#f8f5fc;--card:#fff;--text:#24183a;--muted:#74677e;--danger:#b13b4a;--ok:#24704c;--line:#dfd4ea;--soft:#f2e9fb}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--lav),#5d318d);color:#fff;padding:14px 16px;box-shadow:0 2px 12px #0002}header h1{margin:0;font-size:21px}header small{opacity:.88}main{padding:14px 14px 92px;max-width:1180px;margin:auto}nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}nav button{border:0;background:none;padding:9px 3px 7px;font-size:11px;color:var(--muted)}nav button.active{color:var(--lav);font-weight:800}nav span{display:block;font-size:20px;margin-bottom:2px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:12px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:14px;box-shadow:0 4px 14px #4a31540d}.stat b{font-size:26px;display:block;color:var(--lav);margin-top:5px}h2{font-size:21px;margin:4px 0 12px}h3{font-size:17px;margin:0 0 10px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.right{margin-left:auto}button,.btn{cursor:pointer;border:0;border-radius:11px;padding:10px 13px;font-weight:700}.primary{background:var(--lav);color:#fff}.secondary{background:var(--lav2);color:var(--lav)}.danger{background:#fbe5e8;color:var(--danger)}input,select,textarea{width:100%;padding:10px;border:1px solid #d7cbe0;border-radius:10px;background:#fff;font:inherit}textarea{min-height:76px;resize:vertical}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}.full{grid-column:1/-1}.item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}.item-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--lav);font-size:12px;font-weight:800}.money{font-weight:800;color:var(--ok)}.muted{color:var(--muted);font-size:13px}.empty{text-align:center;padding:24px;color:var(--muted)}.notice{padding:11px 12px;border-radius:12px;background:var(--soft);font-size:14px}.plan-grid{display:grid;grid-template-columns:1.25fr .85fr;gap:12px;margin-top:12px}.task-line{display:grid;grid-template-columns:28px 110px 1fr auto;gap:8px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}.task-line:last-child{border-bottom:0}.task-line.done{opacity:.58}.task-time{font-weight:800}.quote-result{background:linear-gradient(135deg,#f1e8fb,#fff7df);border:1px solid #d8c5ec;border-radius:15px;padding:14px}.quote-price{font-size:30px;font-weight:900;color:var(--lav)}dialog{border:0;border-radius:18px;width:min(760px,94vw);max-height:90vh;padding:0;box-shadow:0 18px 60px #0005}dialog::backdrop{background:#241f2d88}.modal{padding:16px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.close{background:var(--lav2);color:var(--lav)}progress{width:100%;height:10px}.mini{font-size:12px;padding:7px 9px}
+.quick-filter{background:#fff;border:1px solid var(--line);color:var(--lav)}
+.quick-filter.active{background:var(--lav);color:#fff}
+.order-client{font-size:18px;font-weight:900;color:var(--lav)}
+.order-product{font-weight:800;margin-top:3px}
+.status-cotizacion{background:#eee;color:#555}
+.status-confirmado{background:#e6f4ea;color:#176b36}
+.status-anticipo-pendiente{background:#fde8e8;color:#a61b1b}
+.status-diseno{background:#fff3cd;color:#7a5a00}
+.status-aprobacion{background:#ffe8c2;color:#8a4d00}
+.status-produccion{background:#dcecff;color:#1559a8}
+.status-empaque{background:#eee3ff;color:#663399}
+.status-entregado{background:#dff5e5;color:#16703a}
+.order-money{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin-top:10px;padding:10px;background:#faf8fc;border-radius:11px;font-size:13px}
+.order-money strong{font-size:14px}
+.date-group{font-size:14px;font-weight:900;color:var(--lav);margin:18px 2px 8px;padding-bottom:5px;border-bottom:2px solid var(--lav2)}
 @media(min-width:760px){.cards{grid-template-columns:repeat(4,minmax(0,1fr))}nav{position:sticky;top:68px;max-width:1180px;margin:auto;border:1px solid var(--line);border-radius:14px;overflow:hidden;grid-template-columns:repeat(5,1fr)}main{padding-bottom:30px}}
 @media(max-width:760px){.plan-grid{grid-template-columns:1fr}.task-line{grid-template-columns:26px 88px 1fr}.task-actions{grid-column:2/-1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
 </style>
@@ -23,7 +38,30 @@
 <nav id="nav"><button data-view="dashboard" class="active"><span>🏠</span>Inicio</button><button data-view="orders"><span>📦</span>Pedidos</button><button data-view="agenda"><span>📅</span>Agenda</button><button data-view="quotes"><span>🧮</span>Cotizador</button><button data-view="more"><span>⚙️</span>Más</button></nav>
 <main>
 <section id="dashboard" class="view active"><h2>Resumen</h2><div class="grid cards"><div class="card stat"><span class="muted">Pedidos activos</span><b id="sActive">0</b></div><div class="card stat"><span class="muted">Por cobrar</span><b id="sBalance">$0</b></div><div class="card stat"><span class="muted">Próxima entrega</span><b id="sNext">—</b></div><div class="card stat"><span class="muted">Clientes</span><b id="sClients">0</b></div></div><div class="plan-grid"><div class="card"><div class="row"><h3>Plan por fecha</h3><div class="right" style="min-width:190px"><label>Ver fecha</label><input id="planDate" type="date" onchange="renderPlan()"></div></div><div id="planList"></div><button class="primary" onclick="openTaskForPlan()">+ Agregar tarea</button></div><div class="card"><h3>Prioridad recomendada</h3><div id="priorityBox" class="notice">Organiza primero las entregas más cercanas.</div><h3 style="margin-top:16px">Próximas entregas</h3><div id="nextOrders"></div><h3 style="margin-top:16px">Progreso LLQP</h3><label>Horas estudiadas</label><input id="llqpHours" type="number" min="0" step="0.5"><label style="margin-top:9px">Meta semanal</label><input id="llqpGoal" type="number" min="1" step="0.5" value="8"><progress id="llqpProgress" max="100" value="0"></progress><div id="llqpText" class="muted"></div></div></div></section>
-<section id="orders" class="view"><div class="row"><h2>Pedidos</h2><button class="primary right" onclick="openOrder()">+ Nuevo pedido</button></div><div class="toolbar"><input id="orderSearch" placeholder="Buscar cliente o producto…" oninput="renderOrders()"><select id="orderFilter" onchange="renderOrders()"><option value="">Todos los estados</option><option>Cotización</option><option>Confirmado</option><option>Anticipo pendiente</option><option>Diseño</option><option>Aprobación</option><option>Producción</option><option>Empaque</option><option>Entregado</option></select></div><div id="ordersList"></div></section>
+<section id="orders" class="view"><div class="row"><h2>Pedidos</h2><button class="primary right" onclick="openOrder()">+ Nuevo pedido</button></div>
+<div class="toolbar">
+<input id="orderSearch" placeholder="Buscar cliente, producto, personaje, color…" oninput="renderOrders()">
+<select id="orderFilter" onchange="renderOrders()"><option value="">Todos los estados</option><option>Cotización</option><option>Confirmado</option><option>Anticipo pendiente</option><option>Diseño</option><option>Aprobación</option><option>Producción</option><option>Empaque</option><option>Entregado</option></select>
+<select id="orderSort" onchange="renderOrders()">
+<option value="dateAsc">Entrega más próxima</option>
+<option value="dateDesc">Entrega más lejana</option>
+<option value="clientAsc">Cliente A–Z</option>
+<option value="clientDesc">Cliente Z–A</option>
+<option value="status">Estado</option>
+<option value="category">Categoría</option>
+<option value="balance">Mayor saldo pendiente</option>
+</select>
+</div>
+<div class="toolbar" id="quickOrderFilters">
+<button class="quick-filter active mini" onclick="setQuickOrderFilter('all',this)">Todos</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('today',this)">Hoy</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('week',this)">Esta semana</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('pending',this)">Pendientes</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('production',this)">Producción</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('delivered',this)">Entregados</button>
+<button class="quick-filter mini" onclick="setQuickOrderFilter('balance',this)">Saldo pendiente</button>
+</div>
+<div id="ordersList"></div></section>
 <section id="agenda" class="view"><div class="row"><h2>Agenda completa</h2><button class="primary right" onclick="openTask()">+ Nueva tarea</button></div><div id="agendaList"></div></section>
 <section id="quotes" class="view"><div class="row"><h2>Cotizador automático</h2><button class="secondary right" onclick="resetQuote()">Limpiar</button></div><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"><div class="card"><div class="form-grid"><div class="full"><label>Producto</label><input id="qProduct" placeholder="Ej. Taza personalizada"></div><div><label>Materiales (CAD)</label><input id="qMaterials" type="number" min="0" step="0.01" value="0" oninput="calculateQuote()"></div><div><label>Otros gastos (CAD)</label><input id="qOther" type="number" min="0" step="0.01" value="0" oninput="calculateQuote()"></div><div><label>Horas de trabajo</label><input id="qHours" type="number" min="0" step="0.25" value="1" oninput="calculateQuote()"></div><div><label>Valor de tu hora</label><input id="qHourly" type="number" min="0" step="0.01" value="20" oninput="calculateQuote()"></div><div><label>Ganancia deseada (%)</label><input id="qMargin" type="number" min="0" step="1" value="35" oninput="calculateQuote()"></div><div><label>Cantidad</label><input id="qQty" type="number" min="1" step="1" value="1" oninput="calculateQuote()"></div></div></div><div class="quote-result"><div class="muted">Costo total de producción</div><div id="qCost" style="font-size:20px;font-weight:800">$0</div><div class="muted" style="margin-top:12px">Precio sugerido total</div><div id="qPrice" class="quote-price">$0</div><div class="muted">Precio por unidad: <b id="qUnit">$0</b></div><div class="muted">Ganancia estimada: <b id="qProfit">$0</b></div><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="quoteToOrder()">Convertir en pedido</button><button class="secondary" onclick="saveQuote()">Guardar cálculo</button></div></div></div><div class="card" style="margin-top:12px"><h3>Cálculos guardados</h3><div id="savedQuotes"></div></div></section>
 <section id="more" class="view"><h2>Más herramientas</h2><div class="grid"><div class="card"><h3>Finanzas</h3><div class="row"><span>Ventas registradas</span><strong class="right" id="fSales">$0</strong></div><div class="row"><span>Anticipos recibidos</span><strong class="right" id="fDeposits">$0</strong></div><div class="row"><span>Saldos pendientes</span><strong class="right" id="fBalances">$0</strong></div></div><div class="card"><h3>Clientes</h3><div class="row"><span>Total de clientes</span><strong class="right" id="moreClients">0</strong></div><button class="secondary" style="margin-top:10px" onclick="openClient()">+ Agregar cliente</button><div id="clientsList" style="margin-top:10px"></div></div><div class="card"><h3>Respaldo de seguridad</h3><p class="muted">Exporta una copia regularmente para proteger tus datos.</p><div class="toolbar"><button class="primary" onclick="exportBackup()">Descargar respaldo</button><label class="btn secondary">Importar respaldo<input type="file" accept=".json" hidden onchange="importBackup(event)"></label></div><div class="notice">Los datos se guardan en este dispositivo. El respaldo evita perderlos.</div></div><div class="card"><h3>Instalar como app</h3><p class="muted">En iPhone: Safari → Compartir → Añadir a pantalla de inicio.</p></div></div></section>
@@ -31,7 +69,7 @@
 <dialog id="orderDialog"><form class="modal" id="orderForm" method="dialog"><div class="modal-head"><h3 id="orderTitle">Nuevo pedido</h3><button type="button" class="close" onclick="orderDialog.close()">✕</button></div><input type="hidden" id="orderId"><div class="form-grid"><div><label>Cliente</label><input id="oClient" required></div>
 <div><label>Teléfono</label><input id="oPhone"></div>
 <div><label>Categoría</label>
-<select id="oCategory">
+<select id="oCategory" onchange="applyOrderTemplate()">
 <option value="">Seleccionar categoría</option>
 <option>Stickers y etiquetas</option>
 <option>Tazas y termos</option>
@@ -44,7 +82,7 @@
 <option>Impresión 3D</option>
 <option>Otros</option>
 </select></div>
-<div><label>Producto específico</label><input id="oProduct" required placeholder="Ej. Combo 119 etiquetas"></div><div><label>Fecha de entrega</label><input id="oDate" type="date"></div><div><label>Hora</label><input id="oTime" type="time"></div><div><label>Precio</label><input id="oPrice" type="number" step="0.01" min="0"></div><div><label>Anticipo</label><input id="oDeposit" type="number" step="0.01" min="0"></div><div><label>Tipo de entrega</label><select id="oDelivery"><option>Recoge</option><option>Domicilio</option><option>Punto de encuentro</option></select></div><div><label>Costo de entrega</label><input id="oDeliveryCost" type="number" step="0.01" min="0"></div><div class="full"><label>Dirección o lugar</label><input id="oAddress"></div><div><label>Estado</label><select id="oStatus"><option>Cotización</option><option>Confirmado</option><option>Anticipo pendiente</option><option>Diseño</option><option>Aprobación</option><option>Producción</option><option>Empaque</option><option>Entregado</option></select></div><div class="full"><label>Personalización / diseño elegido</label>
+<div><label>Producto específico</label><input id="oProduct" required placeholder="Ej. Combo 119 etiquetas" onchange="applyOrderTemplate()"></div><div><label>Fecha de entrega</label><input id="oDate" type="date"></div><div><label>Hora</label><input id="oTime" type="time"></div><div><label>Precio</label><input id="oPrice" type="number" step="0.01" min="0"></div><div><label>Anticipo</label><input id="oDeposit" type="number" step="0.01" min="0"></div><div><label>Tipo de entrega</label><select id="oDelivery"><option>Recoge</option><option>Domicilio</option><option>Punto de encuentro</option></select></div><div><label>Costo de entrega</label><input id="oDeliveryCost" type="number" step="0.01" min="0"></div><div class="full"><label>Dirección o lugar</label><input id="oAddress"></div><div><label>Estado</label><select id="oStatus"><option>Cotización</option><option>Confirmado</option><option>Anticipo pendiente</option><option>Diseño</option><option>Aprobación</option><option>Producción</option><option>Empaque</option><option>Entregado</option></select></div><div class="full"><div class="row"><label>Personalización / diseño elegido</label><button type="button" class="secondary mini right" onclick="applyOrderTemplate(true)">Cargar plantilla</button></div>
 <textarea id="oDesign" style="min-height:140px" placeholder="Ejemplo:
 Nombre: Liam Pena
 Personaje: León
@@ -89,10 +127,102 @@ function renderDashboard(){const active=db.orders.filter(o=>o.status!=='Entregad
 $('llqpHours').onchange=()=>{db.llqp.hours=+$('llqpHours').value||0;save()};$('llqpGoal').onchange=()=>{db.llqp.goal=+$('llqpGoal').value||8;save()};
 function renderPlan(){const date=$('planDate').value||new Date().toISOString().slice(0,10);$('planDate').value=date;const list=db.tasks.filter(t=>t.date===date).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));$('planList').innerHTML=list.length?list.map(t=>`<div class="task-line ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${t.id}')"><div class="task-time">${t.time||'—'}${t.end?'–'+t.end:''}</div><div><b>${esc(t.title)}</b><div class="muted">${esc(t.category)}${t.notes?' · '+esc(t.notes):''}</div></div><div class="task-actions"><button class="secondary mini" onclick="editTask('${t.id}')">Editar</button></div></div>`).join(''):'<div class="empty">No hay tareas para esta fecha.</div>'}
 function openTaskForPlan(){$('taskForm').reset();$('taskId').value='';$('taskTitle').textContent='Nueva tarea';$('tDate').value=$('planDate').value;$('tRepeat').value='none';$('tRepeatUntil').value='';toggleRepeatFields();taskDialog.showModal()}
-function renderOrders(){const q=($('orderSearch')?.value||'').toLowerCase(),f=$('orderFilter')?.value||'';const list=db.orders.filter(o=>(!q||(o.client+' '+(o.category||'')+' '+o.product+' '+(o.design||'')).toLowerCase().includes(q))&&(!f||o.status===f)).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));$('ordersList').innerHTML=list.length?list.map(o=>{const bal=(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0);return `<div class="item"><div class="item-head"><div><b>${esc(o.product)}</b><div class="muted">${esc(o.category||'Sin categoría')} · ${esc(o.client)} · ${esc(o.phone||'Sin teléfono')}</div></div><span class="badge">${esc(o.status)}</span></div><div class="row" style="margin-top:8px"><span>📅 ${dateLabel(o.date)} ${o.time||''}</span><span>🚚 ${esc(o.delivery||'')}</span><span class="money right">Saldo ${money(bal)}</span></div><div class="muted">${esc(o.address||'')}${o.notes?' · '+esc(o.notes):''}</div>
-${o.design?`<div class="notice" style="margin-top:8px;white-space:pre-wrap"><b>Personalización:</b><br>${esc(o.design)}</div>`:''}
-<div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="editOrder('${o.id}')">Editar</button><button class="danger" onclick="deleteOrder('${o.id}')">Eliminar</button></div></div>`}).join(''):'<div class="empty">No hay pedidos.</div>'}
-function openOrder(){orderForm.reset();orderId.value='';orderTitle.textContent='Nuevo pedido';orderDialog.showModal()}function editOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;orderTitle.textContent='Editar pedido';orderId.value=o.id;oClient.value=o.client;oPhone.value=o.phone;oCategory.value=o.category||'';oProduct.value=o.product;oDate.value=o.date;oTime.value=o.time;oPrice.value=o.price;oDeposit.value=o.deposit;oDelivery.value=o.delivery;oDeliveryCost.value=o.deliveryCost;oAddress.value=o.address;oStatus.value=o.status;oDesign.value=o.design;oNotes.value=o.notes;orderDialog.showModal()}function deleteOrder(id){if(confirm('¿Eliminar este pedido?')){db.orders=db.orders.filter(x=>x.id!==id);save()}}
+let quickOrderFilter='all';
+function setQuickOrderFilter(filter,btn){
+ quickOrderFilter=filter;
+ document.querySelectorAll('#quickOrderFilters .quick-filter').forEach(b=>b.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+ renderOrders();
+}
+function statusClass(status){
+ return 'status-'+String(status||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+}
+function orderDateGroup(date){
+ if(!date)return 'Sin fecha de entrega';
+ const today=new Date();today.setHours(0,0,0,0);
+ const d=new Date(date+'T00:00:00');
+ const diff=Math.round((d-today)/86400000);
+ if(diff===0)return '📅 Hoy';
+ if(diff===1)return '📅 Mañana';
+ if(diff===-1)return '📅 Ayer';
+ return '📅 '+dateLabel(date);
+}
+function renderOrders(){
+ const q=($('orderSearch')?.value||'').toLowerCase(),f=$('orderFilter')?.value||'',sort=$('orderSort')?.value||'dateAsc';
+ const today=new Date();today.setHours(0,0,0,0);
+ const weekEnd=new Date(today);weekEnd.setDate(today.getDate()+7);
+ let list=db.orders.filter(o=>{
+  const text=(o.client+' '+(o.phone||'')+' '+(o.category||'')+' '+o.product+' '+(o.design||'')+' '+(o.notes||'')).toLowerCase();
+  if(q&&!text.includes(q))return false;
+  if(f&&o.status!==f)return false;
+  const d=o.date?new Date(o.date+'T00:00:00'):null;
+  const bal=(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0);
+  if(quickOrderFilter==='today'&&(!d||d.getTime()!==today.getTime()))return false;
+  if(quickOrderFilter==='week'&&(!d||d<today||d>weekEnd))return false;
+  if(quickOrderFilter==='pending'&&o.status==='Entregado')return false;
+  if(quickOrderFilter==='production'&&o.status!=='Producción')return false;
+  if(quickOrderFilter==='delivered'&&o.status!=='Entregado')return false;
+  if(quickOrderFilter==='balance'&&bal<=0)return false;
+  return true;
+ });
+ const balance=o=>(+o.price||0)+(+o.deliveryCost||0)-(+o.deposit||0);
+ const sorters={
+  dateAsc:(a,b)=>(a.date||'9999-12-31').localeCompare(b.date||'9999-12-31')||(a.time||'99:99').localeCompare(b.time||'99:99'),
+  dateDesc:(a,b)=>(b.date||'0000').localeCompare(a.date||'0000'),
+  clientAsc:(a,b)=>(a.client||'').localeCompare(b.client||'','es',{sensitivity:'base'}),
+  clientDesc:(a,b)=>(b.client||'').localeCompare(a.client||'','es',{sensitivity:'base'}),
+  status:(a,b)=>(a.status||'').localeCompare(b.status||'','es'),
+  category:(a,b)=>(a.category||'').localeCompare(b.category||'','es'),
+  balance:(a,b)=>balance(b)-balance(a)
+ };
+ list.sort(sorters[sort]||sorters.dateAsc);
+ if(!list.length){$('ordersList').innerHTML='<div class="empty">No hay pedidos con estos filtros.</div>';return}
+ let lastGroup='';
+ $('ordersList').innerHTML=list.map(o=>{
+  const bal=balance(o),total=(+o.price||0)+(+o.deliveryCost||0);
+  let group='';
+  if(sort==='dateAsc'||sort==='dateDesc'){
+   const g=orderDateGroup(o.date);
+   if(g!==lastGroup){lastGroup=g;group=`<div class="date-group">${g}</div>`}
+  }
+  return `${group}<div class="item">
+  <div class="item-head">
+   <div><div class="order-client">👤 ${esc(o.client||'Cliente sin nombre')}</div>
+   <div class="order-product">${esc(o.product)}</div>
+   <div class="muted">${esc(o.category||'Sin categoría')} · ${esc(o.phone||'Sin teléfono')}</div></div>
+   <span class="badge ${statusClass(o.status)}">${esc(o.status)}</span>
+  </div>
+  <div class="row" style="margin-top:9px"><span>📅 ${dateLabel(o.date)} ${o.time||''}</span><span>🚚 ${esc(o.delivery||'')}</span></div>
+  ${o.address?`<div class="muted" style="margin-top:5px">📍 ${esc(o.address)}</div>`:''}
+  ${o.design?`<div class="notice" style="margin-top:9px;white-space:pre-wrap"><b>Personalización:</b><br>${esc(o.design)}</div>`:''}
+  ${o.notes?`<div class="muted" style="margin-top:7px"><b>Notas:</b> ${esc(o.notes)}</div>`:''}
+  <div class="order-money">
+   <span>Total</span><strong>${money(total)}</strong>
+   <span>Anticipo</span><strong>${money(+o.deposit||0)}</strong>
+   <span>Saldo</span><strong class="${bal>0?'money':''}">${money(bal)}</strong>
+  </div>
+  <div class="toolbar" style="margin-top:9px"><button class="secondary" onclick="editOrder('${o.id}')">Editar</button><button class="danger" onclick="deleteOrder('${o.id}')">Eliminar</button></div>
+  </div>`;
+ }).join('');
+}
+const orderTemplates={
+ 'Stickers y etiquetas':'Nombre:\nCurso o grupo:\nPersonaje o tema:\nColor principal:\nCombo o cantidad:\nTipo de acabado:',
+ 'Tazas y termos':'Nombre:\nTema o personaje:\nFrase:\nColor principal:\nTipo de taza o termo:\nFoto incluida:',
+ 'Desayunos sorpresa':'Ocasión:\nNombre de quien recibe:\nBebida:\nPlato fuerte:\nAcompañante:\nPostre:\nGlobos o decoración:\nMensaje de la tarjeta:',
+ 'Libros y cuadernos personalizados':'Nombre:\nEdad:\nTema o personaje:\nNúmero de páginas:\nIdioma:\nDedicatoria:\nTamaño:',
+ 'Llaveros':'Nombre:\nTema o personaje:\nColor:\nTipo de llavero:\nEnlace o información a programar:',
+ 'Tarjetas':'Nombre o empresa:\nTipo de tarjeta:\nColores:\nTexto principal:\nCantidad:\nAcabado:',
+ 'Cake toppers':'Nombre:\nEdad o celebración:\nTema:\nColores:\nCantidad de piezas:\nMedida:',
+ 'Ramos y detalles':'Ocasión:\nNombre:\nTema o equipo:\nColores:\nCantidad de sobres o elementos:\nMensaje:',
+ 'Impresión 3D':'Nombre de la pieza:\nColor:\nMedidas:\nCantidad:\nTexto o nombre:\nDetalles especiales:',
+ 'Otros':'Producto:\nNombre:\nTema:\nColores:\nCantidad:\nDetalles:'
+};
+function applyOrderTemplate(force=false){
+ const template=orderTemplates[oCategory.value]||'Nombre:\nTema:\nColor:\nCantidad:\nDetalles:';
+ if(force||!oDesign.value.trim())oDesign.value=template;
+}
+function openOrder(){orderForm.reset();orderId.value='';orderTitle.textContent='Nuevo pedido';orderDialog.showModal()}
+function editOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;orderTitle.textContent='Editar pedido';orderId.value=o.id;oClient.value=o.client;oPhone.value=o.phone;oCategory.value=o.category||'';oProduct.value=o.product;oDate.value=o.date;oTime.value=o.time;oPrice.value=o.price;oDeposit.value=o.deposit;oDelivery.value=o.delivery;oDeliveryCost.value=o.deliveryCost;oAddress.value=o.address;oStatus.value=o.status;oDesign.value=o.design;oNotes.value=o.notes;orderDialog.showModal()}function deleteOrder(id){if(confirm('¿Eliminar este pedido?')){db.orders=db.orders.filter(x=>x.id!==id);save()}}
 orderForm.onsubmit=e=>{e.preventDefault();const id=orderId.value||crypto.randomUUID();const o={id,client:oClient.value.trim(),phone:oPhone.value.trim(),category:oCategory.value,product:oProduct.value.trim(),date:oDate.value,time:oTime.value,price:+oPrice.value||0,deposit:+oDeposit.value||0,delivery:oDelivery.value,deliveryCost:+oDeliveryCost.value||0,address:oAddress.value.trim(),status:oStatus.value,design:oDesign.value.trim(),notes:oNotes.value.trim()};const i=db.orders.findIndex(x=>x.id===id);if(i>=0)db.orders[i]=o;else db.orders.push(o);if(o.client&&!db.clients.some(c=>c.name.toLowerCase()===o.client.toLowerCase()))db.clients.push({id:crypto.randomUUID(),name:o.client,phone:o.phone,email:'',instagram:'',address:o.address,notes:''});orderDialog.close();save()};
 function renderAgenda(){const list=[...db.tasks].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));$('agendaList').innerHTML=list.length?list.map(t=>`<div class="item" style="opacity:${t.done?.6:1}"><div class="item-head"><div><b>${t.done?'✅ ':''}${esc(t.title)}</b><div class="muted">${dateLabel(t.date)} ${t.time||''}${t.end?'–'+t.end:''} · ${esc(t.category)}</div></div></div><div class="muted">${esc(t.notes||'')}</div><div class="toolbar" style="margin-top:8px"><button class="secondary" onclick="toggleTask('${t.id}')">${t.done?'Reabrir':'Completar'}</button><button class="secondary" onclick="editTask('${t.id}')">Editar</button><button class="danger" onclick="deleteTask('${t.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">No hay tareas.</div>'}
 
