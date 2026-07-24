@@ -1,4 +1,4 @@
-const CACHE='katrielle-control-v4-2';
+const CACHE='katrielle-control-v4-3';
 const FILES=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',event=>{
  self.skipWaiting();
