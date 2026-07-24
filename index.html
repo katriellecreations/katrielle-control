@@ -48,7 +48,7 @@
 
 </style>
 </head>
-<body><div style="position:fixed;top:4px;right:7px;font-size:10px;opacity:.55;z-index:9999">v4.3</div>
+<body><div style="position:fixed;top:4px;right:7px;font-size:10px;opacity:.55;z-index:9999">v4.4</div>
 <header><div style="display:flex;align-items:center;gap:10px">
 <div><h1>Katrielle Control</h1><small>Centro de gestión de Katrielle Creations</small></div>
 <div style="margin-left:auto;text-align:right">
@@ -172,7 +172,7 @@ let db=JSON.parse(localStorage.getItem(KEY)||'null')||seed;db.orders=db.orders||
 const $=id=>document.getElementById(id);
 function save(){
  localStorage.setItem(KEY,JSON.stringify(db));
- db.orders.forEach(normalizeOrderWorkflow);
+ db.orders.forEach(normalizeOrderWorkflow);removeObsoleteSmartTasks();
 renderAll();
  if(window.katrielleCloud?.save) window.katrielleCloud.save(db);
 }
@@ -341,6 +341,36 @@ function normalizeOrderWorkflow(o){
  if(!o.status||!['Cotización','Anticipo pendiente'].includes(o.status))o.status=w.steps[i].status;
  return {w,i};
 }
+
+function isWaitingForDelivery(o){
+ const {w,i}=normalizeOrderWorkflow(o);
+ const stage=(w.steps[i]?.name||'').toLowerCase();
+ return stage==='listo para entregar'||stage==='materiales y decoración listos'&&false;
+}
+function isDeliveryOnlyStage(o){
+ const {w,i}=normalizeOrderWorkflow(o);
+ const stage=(w.steps[i]?.name||'').toLowerCase();
+ return stage==='listo para entregar'||stage==='en camino'||stage==='entregado';
+}
+function orderNeedsProduction(o){
+ if(!o||o.status==='Entregado')return false;
+ const {w,i}=normalizeOrderWorkflow(o);
+ const stage=(w.steps[i]?.name||'').toLowerCase();
+ return !['listo para entregar','en camino','entregado'].includes(stage);
+}
+function deliveryDateReached(o){
+ const today=new Date().toISOString().slice(0,10);
+ return !o.date||o.date<=today;
+}
+function removeObsoleteSmartTasks(){
+ const active=db.orders.filter(orderNeedsProduction);
+ db.tasks=db.tasks.filter(t=>{
+  if(!t.smart||!String(t.title||'').startsWith('Avanzar pedido:'))return true;
+  if(t.orderId)return active.some(o=>o.id===t.orderId);
+  return active.some(o=>t.title.includes(o.product)&&t.title.includes(o.client));
+ });
+}
+
 function nextWorkflowLabel(o){
  const {w,i}=normalizeOrderWorkflow(o);
  return i<w.steps.length-1?w.steps[i+1].name:'Pedido finalizado';
@@ -351,6 +381,7 @@ function advanceOrder(id){
  if(i>=w.steps.length-1){alert('Este pedido ya está entregado.');return}
  const next=i+1;
  o.workflowIndex=next;o.workflowStage=w.steps[next].name;o.status=w.steps[next].status;
+ removeObsoleteSmartTasks();
  save();
 }
 function previousOrderStage(id){
@@ -358,6 +389,7 @@ function previousOrderStage(id){
  const {w,i}=normalizeOrderWorkflow(o);
  if(i<=0)return;
  o.workflowIndex=i-1;o.workflowStage=w.steps[i-1].name;o.status=w.steps[i-1].status;
+ removeObsoleteSmartTasks();
  save();
 }
 function fillWorkflowStageSelect(o=null){
@@ -425,7 +457,13 @@ function renderOrders(){
       <div class="workflow-current">Ahora: ${esc(step.name)}</div>
       ${step.phase?`<span class="phase-label">${esc(step.phase)}</span>`:''}
       <div class="workflow-steps">${i+1} de ${w.steps.length} etapas · Siguiente: <b>${esc(nextWorkflowLabel(o))}</b></div>
-      ${i<w.steps.length-1?`<button class="advance-btn" onclick="advanceOrder('${o.id}')">Avanzar a: ${esc(w.steps[i+1].name)} →</button>`:'<div class="notice" style="margin-top:8px">✅ Pedido entregado</div>'}
+      ${(()=>{
+        const waiting=step.name==='Listo para entregar';
+        if(i>=w.steps.length-1)return '<div class="notice" style="margin-top:8px">✅ Pedido entregado</div>';
+        if(waiting&&!deliveryDateReached(o))return `<div class="notice" style="margin-top:8px">⏳ En espera de entrega para el ${dateLabel(o.date)}. No aparecerá en Programación.</div>`;
+        if(waiting)return `<button class="advance-btn" onclick="advanceOrder('${o.id}')">Marcar como entregado ✓</button>`;
+        return `<button class="advance-btn" onclick="advanceOrder('${o.id}')">Avanzar a: ${esc(w.steps[i+1].name)} →</button>`;
+      })()}
       ${i>0&&i<w.steps.length-1?`<button class="back-btn mini" style="margin-top:6px" onclick="previousOrderStage('${o.id}')">← Volver una etapa</button>`:''}
     </div>`;
   })()}
@@ -456,7 +494,7 @@ function applyOrderTemplate(force=false){
 }
 function openOrder(){orderForm.reset();orderId.value='';orderTitle.textContent='Nuevo pedido';fillWorkflowStageSelect();orderDialog.showModal()}
 function editOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;normalizeOrderWorkflow(o);orderTitle.textContent='Editar pedido';orderId.value=o.id;oClient.value=o.client;oPhone.value=o.phone;oCategory.value=o.category||'';oProduct.value=o.product;oDate.value=o.date;oTime.value=o.time;oPrice.value=o.price;oDeposit.value=o.deposit;oDelivery.value=o.delivery;oDeliveryCost.value=o.deliveryCost;oAddress.value=o.address;oStatus.value=o.status;oDesign.value=o.design;oNotes.value=o.notes;fillWorkflowStageSelect(o);orderDialog.showModal()}function deleteOrder(id){if(confirm('¿Eliminar este pedido?')){db.orders=db.orders.filter(x=>x.id!==id);save()}}
-orderForm.onsubmit=e=>{e.preventDefault();const id=orderId.value||crypto.randomUUID();const existing=db.orders.find(x=>x.id===id);const temp={category:oCategory.value,product:oProduct.value.trim(),workflowKey:oWorkflowStage.dataset.workflowKey};const w=workflowForOrder(temp);const wi=Math.max(0,Math.min(w.steps.length-1,+oWorkflowStage.value||0));const manualStatus=oStatus.value;let workflowIndex=wi;if(existing&&manualStatus!==w.steps[wi].status){const byStatus=w.steps.findIndex(s=>s.status===manualStatus);if(byStatus>=0)workflowIndex=byStatus}const o={id,client:oClient.value.trim(),phone:oPhone.value.trim(),category:oCategory.value,product:oProduct.value.trim(),date:oDate.value,time:oTime.value,price:+oPrice.value||0,deposit:+oDeposit.value||0,delivery:oDelivery.value,deliveryCost:+oDeliveryCost.value||0,address:oAddress.value.trim(),status:w.steps[workflowIndex].status,workflowKey:w.key,workflowIndex,workflowStage:w.steps[workflowIndex].name,design:oDesign.value.trim(),notes:oNotes.value.trim()};const i=db.orders.findIndex(x=>x.id===id);if(i>=0)db.orders[i]=o;else db.orders.push(o);if(o.client&&!db.clients.some(c=>c.name.toLowerCase()===o.client.toLowerCase()))db.clients.push({id:crypto.randomUUID(),name:o.client,phone:o.phone,email:'',instagram:'',address:o.address,notes:''});document.getElementById('orderDialog').close();save()};
+orderForm.onsubmit=e=>{e.preventDefault();const id=orderId.value||crypto.randomUUID();const existing=db.orders.find(x=>x.id===id);const temp={category:oCategory.value,product:oProduct.value.trim(),workflowKey:oWorkflowStage.dataset.workflowKey};const w=workflowForOrder(temp);const wi=Math.max(0,Math.min(w.steps.length-1,+oWorkflowStage.value||0));const manualStatus=oStatus.value;let workflowIndex=wi;if(existing&&manualStatus!==w.steps[wi].status){const byStatus=w.steps.findIndex(s=>s.status===manualStatus);if(byStatus>=0)workflowIndex=byStatus}const o={id,client:oClient.value.trim(),phone:oPhone.value.trim(),category:oCategory.value,product:oProduct.value.trim(),date:oDate.value,time:oTime.value,price:+oPrice.value||0,deposit:+oDeposit.value||0,delivery:oDelivery.value,deliveryCost:+oDeliveryCost.value||0,address:oAddress.value.trim(),status:w.steps[workflowIndex].status,workflowKey:w.key,workflowIndex,workflowStage:w.steps[workflowIndex].name,design:oDesign.value.trim(),notes:oNotes.value.trim()};const i=db.orders.findIndex(x=>x.id===id);if(i>=0)db.orders[i]=o;else db.orders.push(o);if(o.client&&!db.clients.some(c=>c.name.toLowerCase()===o.client.toLowerCase()))db.clients.push({id:crypto.randomUUID(),name:o.client,phone:o.phone,email:'',instagram:'',address:o.address,notes:''});removeObsoleteSmartTasks();document.getElementById('orderDialog').close();save()};
 function renderAgenda(){
  const list=[...db.tasks].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
  const conflictIds=new Set();
@@ -669,8 +707,12 @@ function generateSmartPlan(){
  const start=timeMinutes(smartStart.value),end=timeMinutes(smartEnd.value),gap=+smartBreak.value||0;
  if(start===null||end===null||end<=start){alert('Revisa la hora de inicio y final de tu jornada.');return}
  const existing=db.tasks.filter(t=>t.date===date&&!t.done).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
- const orders=db.orders.filter(o=>o.status!=='Entregado'&&o.date&&o.date>=date).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
- const jobs=orders.map(o=>({title:`Avanzar pedido: ${o.product} — ${o.client}`,category:'Katrielle',minutes:estimateOrderMinutes(o),notes:`Entrega: ${dateLabel(o.date)}. Estado: ${o.status}.`}));
+ removeObsoleteSmartTasks();
+ const orders=db.orders.filter(o=>orderNeedsProduction(o)&&o.date&&o.date>=date).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+ const jobs=orders.map(o=>{
+  const {w,i}=normalizeOrderWorkflow(o);
+  return {orderId:o.id,title:`Avanzar pedido: ${o.product} — ${o.client}`,category:'Katrielle',minutes:estimateOrderMinutes(o),notes:`Entrega: ${dateLabel(o.date)}. Etapa pendiente: ${w.steps[i].name}.`};
+ });
  const llqpRemaining=Math.max(0,(+db.llqp.goal||8)-(+db.llqp.hours||0));
  if(llqpRemaining>0&&!existing.some(t=>t.category==='LLQP'))jobs.push({title:'Estudiar LLQP',category:'LLQP',minutes:60,notes:'Bloque sugerido según tu meta semanal de estudio.'});
  const intervals=freeIntervals(date,start,end);smartPlanSuggestions=[];
@@ -680,7 +722,7 @@ function generateSmartPlan(){
    const [a,b]=intervals[intervalIndex];if(cursor<a)cursor=a;
    if(b-cursor>=Math.min(job.minutes,30)){
     const duration=Math.min(job.minutes,b-cursor);
-    smartPlanSuggestions.push({id:crypto.randomUUID(),title:job.title,date,time:minutesTime(cursor),end:minutesTime(cursor+duration),category:job.category,done:false,notes:job.notes,smart:true});
+    smartPlanSuggestions.push({id:crypto.randomUUID(),orderId:job.orderId||'',title:job.title,date,time:minutesTime(cursor),end:minutesTime(cursor+duration),category:job.category,done:false,notes:job.notes,smart:true});
     cursor+=duration+gap;if(cursor>=b){intervalIndex++;cursor=intervals[intervalIndex]?.[0]}return;
    }
    intervalIndex++;cursor=intervals[intervalIndex]?.[0];
